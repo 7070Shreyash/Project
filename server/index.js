@@ -8,6 +8,9 @@ import helmet from "helmet"; // add some HTTP headers to securing them to comply
 import morgan from "morgan"; // simplifies the logging of request to and from the application
 import path from "path"
 import { fileURLToPath } from "url";
+import { register } from "./controllers/auth.js" ; 
+import authRoutes from "./routes/auth.js" ; // for authentication 
+import userRoutes from "./routes/users.js" ;
 
 // midllewares --> that runs b/w differnet requests
 
@@ -50,6 +53,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage}) ; // we can have access to the uploaded files from here
 
+// post request handling request from the front end 
+
+app.post("/auth/register",upload.single("picture"),register) ; // route , middleware(store the picture in assets/public) , after that call register function ;;; register is a controller
+
+// Routes //
+
+app.use("/auth",authRoutes) ; // any call to auth first pass throught this 
+app.use("/users",userRoutes);
+
 //Mongoose setup 
 const PORT = process.env.PORT || 6001; // if unable to connect
 const MONGO_URL = process.env.MONGO_URL;
@@ -59,8 +71,4 @@ mongoose.connect(MONGO_URL, {
 }).then(()=> {
     app.listen(PORT,()=>console.log(`Server is running at Port no ${PORT}`)) ;
 }).catch((error) => console.log(`${error} did not connect`)) ;
-
-
-
-
 
